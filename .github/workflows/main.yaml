@@ -15,7 +15,8 @@ jobs:
     uses: rameshdn105/Reusable-workflow/.github/workflows/build.yml@main  # Call reusable workflow
     with:
       some_parameter: "value"  # Optional inputs if needed
-    secrets: inherit  # Allows access to secrets from the calling repo
+    secrets:
+      GH_PAT: ${{ secrets.GH_PAT }}  # Allows access to secrets from the calling repo
 # jobs:
 #   build: 
 #     runs-on: self-hosted
