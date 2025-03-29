@@ -22,20 +22,15 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: eu-west-1  # Change to your AWS region
 
+
       - name: Invoke AWS Lambda function
         run: |
-          aws lambda invoke \
-            --function-name asg_scale-function \
-            --payload '[
-              {
-                "Name": "eks-dev-eu-west-1b",
-                "min_size": 1,
-                "max_size": 3,
-                "desired_capacity": 2
-              }
-            ]' \
+            aws lambda invoke \
+            --function-name update-asg-function \
+            --payload "$(echo '[{\"Name\":\"eks-dev-eu-west-1b\",\"min_size\":1,\"max_size\":3,\"desired_capacity\":2}]' | jq -c)" \
             --region eu-west-1 \
             response.json
+    
 
       - name: Display Lambda Response
         run: cat response.json
