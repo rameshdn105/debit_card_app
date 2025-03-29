@@ -1,0 +1,30 @@
+Organization level self-hosted runners:
+ 
+Step1: Go to organization - Actions - Runner Groups - New Runner
+ 
+Step2: New Self-Hosted runner - Select Linux, X64 ->
+ 
+Run below commands on your EC2 Machine:
+ 
+1. Download
+We recommend configuring the runner under "\actions-runner". This will help avoid issues related to service identity folder permissions and long path restrictions on Windows.
+ 
+# Create a folder under the drive root
+$ mkdir actions-runner; cd actions-runner
+# Download the latest runner package
+$ Invoke-WebRequest -Uri https://github.com/actions/runner/releases/download/v2.321.0/actions-runner-win-x64-2.321.0.zip -OutFile actions-runner-win-x64-2.321.0.zip
+# Optional: Validate the hash
+$ if((Get-FileHash -Path actions-runner-win-x64-2.321.0.zip -Algorithm SHA256).Hash.ToUpper() -ne '88d754da46f4053aec9007d172020c1b75ab2e2049c08aef759b643316580bbc'.ToUpper()){ throw 'Computed checksum did not match' }
+# Extract the installer
+$ Add-Type -AssemblyName System.IO.Compression.FileSystem ; [System.IO.Compression.ZipFile]::ExtractToDirectory("$PWD/actions-runner-win-x64-2.321.0.zip", "$PWD")
+ 
+2. Configure
+# Create the runner and start the configuration experience
+$ ./config.cmd --url https://github.com/Demo-Project-12345 --token A4QDRRRRK734HYIAOQCPW3LHSTLLE
+# Run it!
+$ ./run.cmd
+ 
+3. Using your self-hosted runner
+# Use this YAML in your workflow file for each job
+runs-on: self-hosted
+has context menu

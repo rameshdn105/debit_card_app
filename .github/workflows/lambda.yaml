@@ -1,0 +1,41 @@
+name: Manual Trigger - Update ASG via Lambda
+
+on:
+  workflow_dispatch:
+    inputs:
+      ASG_Name: 
+        required: true
+        type: string
+        description: asg_scale
+
+jobs:
+  invoke-lambda:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-west-1  # Change to your AWS region
+
+      - name: Invoke AWS Lambda function
+        run: |
+          aws lambda invoke \
+            --function-name asg_scale-function \
+            --payload '[
+              {
+                "Name": "eks-dev-eu-west-1b",
+                "min_size": 1,
+                "max_size": 3,
+                "desired_capacity": 2
+              }
+            ]' \
+            --region eu-west-1 \
+            response.json
+
+      - name: Display Lambda Response
+        run: cat response.json
