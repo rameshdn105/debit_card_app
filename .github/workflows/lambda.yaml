@@ -27,10 +27,10 @@ jobs:
         run: |
             aws lambda invoke \
             --function-name update-asg-function \
-            --payload "$(echo '[{\"Name\":\"eks-dev-eu-west-1b\",\"min_size\":1,\"max_size\":3,\"desired_capacity\":2}]' | jq -c)" \
+            --payload "$(echo '[{\"Name\":\"eks-dev-eu-west-1b\",\"min_size\":1,\"max_size\":3,\"desired_capacity\":2}]')" \
             --region eu-west-1 \
             response.json
-    
+
 
       - name: Display Lambda Response
         run: cat response.json
