@@ -1,0 +1,10 @@
+- name: Create JSON Payload
+  run: |
+    echo '[
+      {
+        "Name": "eks-dev-eu-west-1b",
+        "min_size": 1,
+        "max_size": 3,
+        "desired_capacity": 2
+      }
+    ]' > payload.json

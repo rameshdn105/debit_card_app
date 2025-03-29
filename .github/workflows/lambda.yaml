@@ -1,6 +1,9 @@
 name: Manual Trigger - Update ASG via Lambda
 
 on:
+  push:
+    branches:
+        - master
   workflow_dispatch:
     inputs:
       ASG_Name: 
@@ -27,7 +30,7 @@ jobs:
         run: |
             aws lambda invoke \
             --function-name update-asg-function \
-            --payload "$(echo '[{\"Name\":\"eks-dev-eu-west-1b\",\"min_size\":1,\"max_size\":3,\"desired_capacity\":2}]')" \
+            --payload file://payload.json \
             --region eu-west-1 \
             response.json
 
