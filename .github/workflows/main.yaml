@@ -9,130 +9,138 @@ on:
         required: true
         type: string
         description: DB name
+
 jobs:
   build: 
-    runs-on: self-hosted
-    steps:
-    - name: Checkout Code
-      uses: actions/checkout@v3
+    uses: rameshdn105/Reusable-workflow/.github/workflows/build.yml@main  # Call reusable workflow
+    with:
+      some_parameter: "value"  # Optional inputs if needed
+    secrets:
+      GH_PAT: ${{ secrets.GH_PAT }}  # Allows access to secrets from the calling repo
+# jobs:
+#   build: 
+#     runs-on: self-hosted
+#     steps:
+#     - name: Checkout Code
+#       uses: actions/checkout@v3
 
-    - name: Setup JDK
-      uses: actions/setup-java@v3
-      with:
-        java-version: '17'
-        distribution: 'temurin'
-        cache: maven
-
-    - name: generate version
-      run: |
-        commitid=$(git rev-parse --short HEAD)
-        semanticVersion="1.0.0"
-        export Ver=$semanticVersion-$commitid
-        echo "VERSION=$semanticVersion-$commitid" >> $GITHUB_ENV
-        echo "$Ver"
-        echo "we are usig self hosted runner" 
-    # - name: Cache SonarQube dependencies
-    #   uses: actions/cache@v3
-    #   with:
-    #     path: ~/.sonar/cache
-    #     key: ${{ runner.os }}-sonar-${{ hashFiles('**/*.java') }}
-    #     restore-keys: |
-    #       ${{ runner.os }}-sonar-
-        
-    - name: Build with maven
-      env:
-        VERSION: 1.0.0
-        DB_HOST: ${{ secrets.DB_HOST }}
-        DB_NAME: ${{ inputs.db_database_name }}
-        DB_USER: ${{ secrets.DB_USER }}
-        DB_PASS: ${{ secrets.DB_PASS }}
-      run: |
-        cd project_code
-        mvn clean install
-        cd target
-        ls
-        echo "${{ inputs.db_database_name }}"
-    
-    # - name: SonarQube Scan
-    #   uses: sonarsource/sonarqube-scan-action@master
-    #   with:
-    #     args: >
-    #       -Dsonar.projectKey=shyam
-    #   env:
-    #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-    #     SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-
-#     - name: Upload artifactory to GithubWorkspace
-#       uses: actions/upload-artifact@v3.1.0
+#     - name: Setup JDK
+#       uses: actions/setup-java@v3
 #       with:
-#         name: DebitCardWar-${{ env.VERSION }}
-#         path: |
-#           ${{ GITHUB.WORKSPACE }}/project_code/target/**.war
+#         java-version: '17'
+#         distribution: 'temurin'
+#         cache: maven
 
-#     # - name: Upload Build Artifact to JFrogArtifactory
-#     #   run: |
-#     #       curl -u ${{ secrets.JFROG_USER }}:${{ secrets.JFROG_PASS }} -X PUT "http://18.116.72.114:8081/artifactory/generic-local/Ramesh/debitcard/debitcardapp.${{ env.VERSION }}.war" -T ${{ github.workspace }}/project_code/target/*.war
+#     - name: generate version
+#       run: |
+#         commitid=$(git rev-parse --short HEAD)
+#         semanticVersion="1.0.0"
+#         export Ver=$semanticVersion-$commitid
+#         echo "VERSION=$semanticVersion-$commitid" >> $GITHUB_ENV
+#         echo "$Ver"
+#         echo "we are usig self hosted runner" 
+#     # - name: Cache SonarQube dependencies
+#     #   uses: actions/cache@v3
+#     #   with:
+#     #     path: ~/.sonar/cache
+#     #     key: ${{ runner.os }}-sonar-${{ hashFiles('**/*.java') }}
+#     #     restore-keys: |
+#     #       ${{ runner.os }}-sonar-
+        
+#     - name: Build with maven
+#       env:
+#         VERSION: 1.0.0
+#         DB_HOST: ${{ secrets.DB_HOST }}
+#         DB_NAME: ${{ inputs.db_database_name }}
+#         DB_USER: ${{ secrets.DB_USER }}
+#         DB_PASS: ${{ secrets.DB_PASS }}
+#       run: |
+#         cd project_code
+#         mvn clean install
+#         cd target
+#         ls
+#         echo "${{ inputs.db_database_name }}"
+    
+#     # - name: SonarQube Scan
+#     #   uses: sonarsource/sonarqube-scan-action@master
+#     #   with:
+#     #     args: >
+#     #       -Dsonar.projectKey=shyam
+#     #   env:
+#     #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+#     #     SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+
+# #     - name: Upload artifactory to GithubWorkspace
+# #       uses: actions/upload-artifact@v3.1.0
+# #       with:
+# #         name: DebitCardWar-${{ env.VERSION }}
+# #         path: |
+# #           ${{ GITHUB.WORKSPACE }}/project_code/target/**.war
+
+# #     # - name: Upload Build Artifact to JFrogArtifactory
+# #     #   run: |
+# #     #       curl -u ${{ secrets.JFROG_USER }}:${{ secrets.JFROG_PASS }} -X PUT "http://18.116.72.114:8081/artifactory/generic-local/Ramesh/debitcard/debitcardapp.${{ env.VERSION }}.war" -T ${{ github.workspace }}/project_code/target/*.war
       
         
-#     # Install AWS CLI is pre-installed in GithubHosted runners
+# #     # Install AWS CLI is pre-installed in GithubHosted runners
 
-#     # Configure AWS credentials (using GitHub secrets)
-#     - name: Configure AWS Credentials
-#       run: |
-#         aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
-#         aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-#         aws configure set region "${{ secrets.AWS_REGION }}"
+# #     # Configure AWS credentials (using GitHub secrets)
+# #     - name: Configure AWS Credentials
+# #       run: |
+# #         aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+# #         aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+# #         aws configure set region "${{ secrets.AWS_REGION }}"
 
-#     # Upload artifact to AWS S3
-#     - name: Upload Artifact to S3
-#       run: |
-#         # Define the path and bucket name
-#         S3_BUCKET_NAME="pipeline-shyam/Github_Pipeline"
-#         ARTIFACT_PATH="${{ GITHUB.WORKSPACE }}/project_code/target/**.war"
-#         S3_OBJECT_KEY="debitcardapp-${{ env.VERSION }}.war"
+# #     # Upload artifact to AWS S3
+# #     - name: Upload Artifact to S3
+# #       run: |
+# #         # Define the path and bucket name
+# #         S3_BUCKET_NAME="pipeline-shyam/Github_Pipeline"
+# #         ARTIFACT_PATH="${{ GITHUB.WORKSPACE }}/project_code/target/**.war"
+# #         S3_OBJECT_KEY="debitcardapp-${{ env.VERSION }}.war"
         
 
-#         # Upload the artifact to S3
-#         aws s3 cp $ARTIFACT_PATH s3://$S3_BUCKET_NAME/$S3_OBJECT_KEY
+# #         # Upload the artifact to S3
+# #         aws s3 cp $ARTIFACT_PATH s3://$S3_BUCKET_NAME/$S3_OBJECT_KEY
 
-# #  Install Docker on the runner (GitHub Actions Ubuntu runners do not have Docker by default)
-#     - name: Install Docker
-#       run: |
-#         sudo apt-get update
-#         sudo apt-get install -y \
-#           apt-transport-https \
-#           ca-certificates \
-#           curl \
-#           software-properties-common
-#         curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-#         sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-#         sudo apt-get update
-#         sudo apt-get install -y docker-ce docker-ce-cli containerd.io
-#         sudo systemctl start docker
-#         sudo systemctl enable docker
-#         docker --version  # Verify Docker is installed
+# # #  Install Docker on the runner (GitHub Actions Ubuntu runners do not have Docker by default)
+# #     - name: Install Docker
+# #       run: |
+# #         sudo apt-get update
+# #         sudo apt-get install -y \
+# #           apt-transport-https \
+# #           ca-certificates \
+# #           curl \
+# #           software-properties-common
+# #         curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+# #         sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+# #         sudo apt-get update
+# #         sudo apt-get install -y docker-ce docker-ce-cli containerd.io
+# #         sudo systemctl start docker
+# #         sudo systemctl enable docker
+# #         docker --version  # Verify Docker is installed
     
-#     - name: Get commit hash
-#       id: get-commit-hash
-#       run: echo "::set-output name=commit-hash::$(git rev-parse --short HEAD)"
+# #     - name: Get commit hash
+# #       id: get-commit-hash
+# #       run: echo "::set-output name=commit-hash::$(git rev-parse --short HEAD)"
 
-#     - name: Get timestamp
-#       id: get-timestamp
-#       run: echo "::set-output name=timestamp::$(date +'%Y-%m-%d-%H-%M')"
+# #     - name: Get timestamp
+# #       id: get-timestamp
+# #       run: echo "::set-output name=timestamp::$(date +'%Y-%m-%d-%H-%M')"
 
-#     - name: Login to Amazon ECR
-#       id: login-pf-aws-ecr
-#       uses: aws-actions/amazon-ecr-login@v1
+# #     - name: Login to Amazon ECR
+# #       id: login-pf-aws-ecr
+# #       uses: aws-actions/amazon-ecr-login@v1
 
-#     - name: Build Docker Image
-#       env:
-#         ECR_REGISTRY: ${{ secrets.AWS_ECR_REGISTRY }}                     #${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-2.amazonaws.com
-#         ECR_REPOSITORY: ${{ secrets.AWS_ECR_REPO }}
-#         IMAGE_TAG: ${{ steps.get-commit-hash.outputs.commit-hash }}-${{ steps.get-timestamp.outputs.timestamp }}
-#       run: |  
-#         docker build -t debitcardapp:$IMAGE_TAG .
-#         docker tag debitcardapp:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-#         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+# #     - name: Build Docker Image
+# #       env:
+# #         ECR_REGISTRY: ${{ secrets.AWS_ECR_REGISTRY }}                     #${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-2.amazonaws.com
+# #         ECR_REPOSITORY: ${{ secrets.AWS_ECR_REPO }}
+# #         IMAGE_TAG: ${{ steps.get-commit-hash.outputs.commit-hash }}-${{ steps.get-timestamp.outputs.timestamp }}
+# #       run: |  
+# #         docker build -t debitcardapp:$IMAGE_TAG .
+# #         docker tag debitcardapp:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+# #         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
 
     
